@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}ورود | نئون چنج{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title h4 text-center">ورود به حساب کاربری</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Single Login Form -->
+                    <div class="login-content">
+                        <form method="post" action="{{ url_for('login') }}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="form-group">
+                                <label for="username">{{ form.username.label }}</label>
+                                {{ form.username(class="form-control", id="username", placeholder="نام کاربری خود را وارد کنید") }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.username.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">{{ form.password.label }}</label>
+                                {{ form.password(class="form-control", id="password", placeholder="رمز عبور خود را وارد کنید") }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block">ورود به سامانه</button>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="text-center">
+                                <p>حساب کاربری ندارید؟ <a href="{{ url_for('register') }}">ثبت نام</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- No extra JS needed for single login form -->
+{% endblock %}
