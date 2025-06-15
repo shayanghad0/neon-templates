@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}ثبت نام | نئون چنج{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title h4 text-center">ثبت نام در نئون چنج</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-gift fa-4x mb-3" style="color: var(--primary-color);"></i>
+                                <h3 class="h5">بونوس 50$ برای کاربران جدید</h3>
+                                <p>پس از ثبت نام 50$ بونوس رایگان دریافت کنید</p>
+                                <div class="alert alert-info">
+                                    معتبر برای 12 ساعت
+                                </div>
+                            </div>
+                            
+                            <div class="features-list">
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-check-circle text-success ml-2"></i>
+                                    <span>معاملات با اهرم 1x تا 10000x</span>
+                                </div>
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-check-circle text-success ml-2"></i>
+                                    <span>نمودارهای حرفه‌ای تریدینگ ویو</span>
+                                </div>
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-check-circle text-success ml-2"></i>
+                                    <span>پشتیبانی از انواع ارزهای دیجیتال</span>
+                                </div>
+                                <div class="feature-item mb-3">
+                                    <i class="fas fa-check-circle text-success ml-2"></i>
+                                    <span>واریز و برداشت آسان</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <form method="post" action="{{ url_for('register') }}">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="form-group">
+                                    <label for="username">{{ form.username.label }}</label>
+                                    {{ form.username(class="form-control", id="username", placeholder="نام کاربری را وارد کنید") }}
+                                    {% if form.username.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.username.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">نام کاربری باید حداقل 4 کاراکتر باشد.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="name">{{ form.name.label }}</label>
+                                    {{ form.name(class="form-control", id="name", placeholder="نام و نام خانوادگی خود را وارد کنید") }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">{{ form.email.label }}</label>
+                                    {{ form.email(class="form-control", id="email", placeholder="ایمیل خود را وارد کنید") }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.email.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password">{{ form.password.label }}</label>
+                                    {{ form.password(class="form-control", id="password", placeholder="رمز عبور خود را وارد کنید") }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">رمز عبور باید حداقل 8 کاراکتر باشد.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="confirm_password">{{ form.confirm_password.label }}</label>
+                                    {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="رمز عبور را مجدداً وارد کنید") }}
+                                    {% if form.confirm_password.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.confirm_password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-block">ثبت نام و دریافت بونوس</button>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="text-center">
+                                    <p>قبلاً ثبت نام کرده‌اید؟ <a href="{{ url_for('login') }}">ورود به حساب کاربری</a></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
