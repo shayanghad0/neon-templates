@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="description" content="صرافی ارز دیجیتال با اهرم‌های بالا از 1x تا 10000x">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}نئون چنج | صرافی ارز دیجیتال با اهرم‌های بالا{% endblock %}</title>
+    
+    <!-- PWA assets -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/icon-512x512.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rtl.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- TradingView Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand site-logo" href="{{ url_for('index') }}">
+                    <span class="neon-pulse">نئون چنج</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">صفحه اصلی</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == url_for('bonus_guide') %}active{% endif %}" href="{{ url_for('bonus_guide') }}">راهنمای بونوس</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == url_for('leaderboard') %}active{% endif %}" href="{{ url_for('leaderboard') }}">برترین معامله‌گران</a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('user_dashboard') %}active{% endif %}" href="{{ url_for('user_dashboard') }}">پنل کاربری</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path.startswith('/user/trade') %}active{% endif %}" href="{{ url_for('user_trade', coin='BTC') }}">معاملات</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('user_deposit') %}active{% endif %}" href="{{ url_for('user_deposit') }}">واریز</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('user_withdrawals') %}active{% endif %}" href="{{ url_for('user_withdrawals') }}">برداشت</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <ul class="navbar-nav">
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('logout') }}">خروج</a>
+                            </li>
+                        {% elif session.get('admin') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">پنل مدیریت</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('logout') }}">خروج</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('login') %}active{% endif %}" href="{{ url_for('login') }}">ورود</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('register') %}active{% endif %}" href="{{ url_for('register') }}">ثبت نام</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Market Ticker -->
+    <div class="market-ticker">
+        <div class="container">
+            <div class="market-ticker-container">
+                <!-- This will be filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        <div id="alerts-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-logo">
+                        <span class="site-logo">
+                            <span class="neon-pulse">نئون چنج</span>
+                        </span>
+                    </div>
+                    <p>صرافی ارز دیجیتال با اهرم‌های بالا از 1x تا 10000x</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-links">
+                        <h4>لینک‌های سریع</h4>
+                        <ul>
+                            <li><a href="{{ url_for('index') }}">صفحه اصلی</a></li>
+                            <li><a href="{{ url_for('bonus_guide') }}">راهنمای بونوس</a></li>
+                            <li><a href="{{ url_for('leaderboard') }}">برترین معامله‌گران</a></li>
+                            {% if current_user.is_authenticated %}
+                                <li><a href="{{ url_for('user_dashboard') }}">پنل کاربری</a></li>
+                                <li><a href="{{ url_for('user_trade', coin='BTC') }}">معاملات</a></li>
+                            {% else %}
+                                <li><a href="{{ url_for('login') }}">ورود</a></li>
+                                <li><a href="{{ url_for('register') }}">ثبت نام</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-links">
+                        <h4>ارزهای دیجیتال</h4>
+                        <ul>
+                            <li><a href="{{ url_for('user_trade', coin='BTC') }}">بیت کوین (BTC)</a></li>
+                            <li><a href="{{ url_for('user_trade', coin='ETH') }}">اتریوم (ETH)</a></li>
+                            <li><a href="{{ url_for('user_trade', coin='BNB') }}">بایننس کوین (BNB)</a></li>
+                            <li><a href="{{ url_for('user_trade', coin='SOL') }}">سولانا (SOL)</a></li>
+                            <li><a href="{{ url_for('user_trade', coin='DOGE') }}">دوج کوین (DOGE)</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="footer-links">
+                        <h4>تماس با ما</h4>
+                        <ul>
+                            <li><a href="mailto:info@neonchange.com">info@neonchange.com</a></li>
+                            <li><a href="https://t.me/neonchange">تلگرام ما</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>تمامی حقوق برای صرافی نئون چنج محفوظ است &copy; ۱۴۰۳</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="mobile-bottom-nav">
+        <a href="{{ url_for('user_dashboard') }}" class="mobile-nav-item {% if request.path == url_for('user_dashboard') %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>پنل</span>
+        </a>
+        <a href="{{ url_for('user_trade', coin='BTC') }}" class="mobile-nav-item {% if request.path.startswith('/user/trade') %}active{% endif %}">
+            <i class="fas fa-chart-line"></i>
+            <span>معاملات</span>
+        </a>
+        <a href="{{ url_for('user_deposit') }}" class="mobile-nav-item {% if request.path == url_for('user_deposit') %}active{% endif %}">
+            <i class="fas fa-wallet"></i>
+            <span>واریز</span>
+        </a>
+        <a href="{{ url_for('user_withdrawals') }}" class="mobile-nav-item {% if request.path == url_for('user_withdrawals') %}active{% endif %}">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>برداشت</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>خروج</span>
+        </a>
+    </nav>
+    {% elif session.get('admin') %}
+    <nav class="mobile-bottom-nav">
+        <a href="{{ url_for('admin_dashboard') }}" class="mobile-nav-item {% if request.path == url_for('admin_dashboard') %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>داشبورد</span>
+        </a>
+        <a href="{{ url_for('admin_user_management') }}" class="mobile-nav-item {% if request.path == url_for('admin_user_management') %}active{% endif %}">
+            <i class="fas fa-users"></i>
+            <span>کاربران</span>
+        </a>
+        <a href="{{ url_for('admin_requests') }}" class="mobile-nav-item {% if request.path == url_for('admin_requests') %}active{% endif %}">
+            <i class="fas fa-exchange-alt"></i>
+            <span>درخواست‌ها</span>
+        </a>
+        <a href="{{ url_for('admin_price') }}" class="mobile-nav-item {% if request.path == url_for('admin_price') %}active{% endif %}">
+            <i class="fas fa-dollar-sign"></i>
+            <span>قیمت‌ها</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>خروج</span>
+        </a>
+    </nav>
+    {% else %}
+    <nav class="mobile-bottom-nav">
+        <a href="{{ url_for('index') }}" class="mobile-nav-item {% if request.path == url_for('index') %}active{% endif %}">
+            <i class="fas fa-home"></i>
+            <span>صفحه اصلی</span>
+        </a>
+        <a href="{{ url_for('leaderboard') }}" class="mobile-nav-item {% if request.path == url_for('leaderboard') %}active{% endif %}">
+            <i class="fas fa-trophy"></i>
+            <span>برترین‌ها</span>
+        </a>
+        <a href="{{ url_for('login') }}" class="mobile-nav-item {% if request.path == url_for('login') %}active{% endif %}">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>ورود</span>
+        </a>
+        <a href="{{ url_for('register') }}" class="mobile-nav-item {% if request.path == url_for('register') %}active{% endif %}">
+            <i class="fas fa-user-plus"></i>
+            <span>ثبت نام</span>
+        </a>
+    </nav>
+    {% endif %}
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
