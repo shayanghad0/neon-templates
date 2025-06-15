@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}نئون چنج | صرافی ارز دیجیتال با اهرم‌های بالا{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">به نئون چنج خوش آمدید</h1>
+            <p class="hero-subtitle">صرافی ارز دیجیتال با اهرم‌های بالا از 1x تا 10000x</p>
+            <div class="hero-buttons">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('user_dashboard') }}" class="btn btn-primary mr-2">پنل کاربری</a>
+                    <a href="{{ url_for('user_trade', coin='BTC') }}" class="btn btn-outline">شروع معامله</a>
+                {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary mr-2">ثبت نام و دریافت 50$ بونوس</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline">ورود به حساب کاربری</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section features-section py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>چرا نئون چنج؟</h2>
+            <p>مزایای استفاده از صرافی نئون چنج</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-rocket fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h5">اهرم‌های بالا</h3>
+                        <p class="card-text">امکان معامله با اهرم از 1x تا 10000x برای بیشترین سود</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-gift fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h5">50$ بونوس</h3>
+                        <p class="card-text">کاربران جدید 50$ بونوس رایگان برای 12 ساعت دریافت می‌کنند</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h3 class="card-title h5">نمودارهای حرفه‌ای</h3>
+                        <p class="card-text">دسترسی به نمودارهای تریدینگ ویو برای تحلیل حرفه‌ای بازار</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Market Overview -->
+<section class="section market-section py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>بازار ارزهای دیجیتال</h2>
+            <p>قیمت‌های لحظه‌ای ارزهای دیجیتال</p>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>نام ارز</th>
+                        <th>نماد</th>
+                        <th>قیمت</th>
+                        <th>معامله</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coin in SUPPORTED_COINS %}
+                    <tr>
+                        <td>
+                            {% if coin == 'BTC' %}بیت کوین
+                            {% elif coin == 'ETH' %}اتریوم
+                            {% elif coin == 'ETC' %}اتریوم کلاسیک
+                            {% elif coin == 'LTC' %}لایت کوین
+                            {% elif coin == 'BNB' %}بایننس کوین
+                            {% elif coin == 'TRX' %}ترون
+                            {% elif coin == 'PEPE' %}پپه
+                            {% elif coin == 'AAVE' %}آوه
+                            {% elif coin == 'DOGE' %}دوج کوین
+                            {% elif coin == 'SOL' %}سولانا
+                            {% elif coin == 'ADA' %}کاردانو
+                            {% elif coin == 'AVAX' %}آوالانچ
+                            {% elif coin == 'SHIB' %}شیبا اینو
+                            {% elif coin == 'TON' %}تون
+                            {% elif coin == 'POL' %}پولیگان
+                            {% elif coin == 'FIL' %}فایل کوین
+                            {% elif coin == 'ATOM' %}کازموس
+                            {% endif %}
+                        </td>
+                        <td class="crypto-symbol">{{ coin }}/USDT</td>
+                        <td class="price-value">{{ prices.get(coin + '/USDT', 0) }} $</td>
+                        <td>
+                            <a href="{{ url_for('user_trade', coin=coin) }}" class="btn btn-sm btn-primary">معامله</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- TradingView Widget Section -->
+<section class="section chart-section py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>نمودار بازار</h2>
+            <p>نمودار زنده قیمت بیت کوین</p>
+        </div>
+        
+        <div class="tradingview-widget-container mb-4">
+            <div id="tradingview_chart"></div>
+        </div>
+        
+        <div class="text-center">
+            <a href="{{ url_for('user_trade', coin='BTC') }}" class="btn btn-primary">شروع معامله</a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section how-section py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>چطور کار می‌کند؟</h2>
+            <p>مراحل شروع معامله در نئون چنج</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">1</div>
+                    <h3 class="h5 mt-3">ثبت نام</h3>
+                    <p>حساب کاربری خود را بسازید و 50$ بونوس دریافت کنید</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">2</div>
+                    <h3 class="h5 mt-3">واریز</h3>
+                    <p>به حساب خود USDT واریز کنید (حداقل 100$)</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">3</div>
+                    <h3 class="h5 mt-3">معامله</h3>
+                    <p>با اهرم دلخواه شروع به معامله کنید</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">4</div>
+                    <h3 class="h5 mt-3">برداشت</h3>
+                    <p>سود خود را به کیف پول خود برداشت کنید</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="section testimonial-section py-5" style="background-color: var(--bg-medium);">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>نظرات کاربران</h2>
+            <p>تجربیات معامله‌گران نئون چنج</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"با اهرم 100x توانستم در یک روز سود 300% کسب کنم. پلتفرم بسیار سریع و کاربرپسند است."</p>
+                        <div class="testimonial-author">
+                            <strong>احمد محمدی</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"بونوس 50 دلاری بسیار عالی بود. توانستم بدون ریسک سرمایه خودم معامله کنم و با آن آشنا شوم."</p>
+                        <div class="testimonial-author">
+                            <strong>سارا کریمی</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        </div>
+                        <p class="card-text">"نمودارهای تریدینگ ویو بسیار کمک کننده است. تیم پشتیبانی هم همیشه پاسخگو هستند."</p>
+                        <div class="testimonial-author">
+                            <strong>امیر حسینی</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section cta-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <h2 class="mb-4">همین حالا شروع کنید</h2>
+                        <p class="mb-4">حساب کاربری خود را بسازید و 50$ بونوس رایگان دریافت کنید</p>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">ثبت نام</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new TradingView.widget({
+            "width": "100%",
+            "height": 500,
+            "symbol": "BTCUSDT",
+            "interval": "D",
+            "timezone": "Asia/Tehran",
+            "theme": "dark",
+            "style": "1",
+            "locale": "fa_IR",
+            "toolbar_bg": "#121424",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_chart"
+        });
+    });
+</script>
+{% endblock %}
