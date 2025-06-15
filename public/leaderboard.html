@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}برترین معامله‌گران | نئون چنج{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card neon-card">
+                <div class="card-header neon-card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>
+                        برترین معامله‌گران
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="leaderboard-container">
+                        {% if top_traders %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>رتبه</th>
+                                            <th>نام کاربری</th>
+                                            <th>نام</th>
+                                            <th>سود کل</th>
+                                            <th>نرخ موفقیت</th>
+                                            <th>میانگین اهرم</th>
+                                            <th>بازده سرمایه</th>
+                                            <th>تعداد معاملات</th>
+                                            <th>بیشترین سود یکجا</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for trader in top_traders %}
+                                            <tr class="{% if loop.index == 1 %}gold-highlight{% elif loop.index == 2 %}silver-highlight{% elif loop.index == 3 %}bronze-highlight{% endif %}">
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ trader.username }}</td>
+                                                <td>{{ trader.name }}</td>
+                                                <td dir="ltr" class="{% if trader.total_profit > 0 %}text-success{% else %}text-danger{% endif %}">
+                                                    ${{ trader.total_profit|round(2) }}
+                                                </td>
+                                                <td>{{ trader.win_rate }}%</td>
+                                                <td>{{ trader.avg_leverage }}x</td>
+                                                <td dir="ltr" class="{% if trader.roi > 0 %}text-success{% else %}text-danger{% endif %}">
+                                                    {{ trader.roi }}%
+                                                </td>
+                                                <td>{{ trader.trade_count }}</td>
+                                                <td dir="ltr" class="{% if trader.largest_profit > 0 %}text-success{% else %}text-danger{% endif %}">
+                                                    ${{ trader.largest_profit }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                هنوز هیچ معامله‌ای انجام نشده است. اولین معامله‌گر موفق شما باشید!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card neon-card">
+                <div class="card-header neon-card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        راهنمای امتیازبندی
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>معیارهای رتبه‌بندی</h5>
+                            <ul class="list-unstyled leaderboard-info">
+                                <li><i class="fas fa-chart-line me-2"></i> <strong>بازده سرمایه (ROI):</strong> نسبت سود به سرمایه‌گذاری کل</li>
+                                <li><i class="fas fa-calculator me-2"></i> <strong>نرخ موفقیت:</strong> درصد معاملات سودآور</li>
+                                <li><i class="fas fa-coins me-2"></i> <strong>سود کل:</strong> مجموع سود خالص از تمام معاملات</li>
+                                <li><i class="fas fa-bolt me-2"></i> <strong>میانگین اهرم:</strong> میانگین اهرم استفاده شده در معاملات</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>چگونه امتیاز بالاتری کسب کنیم</h5>
+                            <ul class="list-unstyled leaderboard-tips">
+                                <li><i class="fas fa-lightbulb me-2"></i> تحلیل‌های دقیق بازار انجام دهید</li>
+                                <li><i class="fas fa-shield-alt me-2"></i> از استراتژی‌های مدیریت ریسک استفاده کنید</li>
+                                <li><i class="fas fa-rocket me-2"></i> اهرم‌های بالاتر (با احتیاط) می‌تواند سود بیشتری ایجاد کند</li>
+                                <li><i class="fas fa-gem me-2"></i> از حد سود (TP) و حد ضرر (SL) هوشمندانه استفاده کنید</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .leaderboard-container {
+        margin-bottom: 2rem;
+    }
+    
+    .gold-highlight {
+        background-color: rgba(218, 165, 32, 0.2) !important;
+        border-left: 4px solid gold;
+    }
+    
+    .silver-highlight {
+        background-color: rgba(192, 192, 192, 0.2) !important;
+        border-left: 4px solid silver;
+    }
+    
+    .bronze-highlight {
+        background-color: rgba(176, 141, 87, 0.2) !important;
+        border-left: 4px solid #cd7f32;
+    }
+    
+    .leaderboard-info li, .leaderboard-tips li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 5px;
+        transition: all 0.3s;
+    }
+    
+    .leaderboard-info li:hover, .leaderboard-tips li:hover {
+        background-color: rgba(33, 150, 243, 0.1);
+        transform: translateX(-5px);
+    }
+    
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    /* Add neon effect for top 3 */
+    .gold-highlight td:first-child {
+        text-shadow: 0 0 10px gold, 0 0 20px gold;
+        font-weight: bold;
+    }
+    
+    .silver-highlight td:first-child {
+        text-shadow: 0 0 10px silver, 0 0 20px silver;
+        font-weight: bold;
+    }
+    
+    .bronze-highlight td:first-child {
+        text-shadow: 0 0 10px #cd7f32, 0 0 20px #cd7f32;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 767px) {
+        .leaderboard-container {
+            overflow-x: auto;
+        }
+        
+        .table th, .table td {
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}
